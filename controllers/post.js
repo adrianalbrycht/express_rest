@@ -2,7 +2,7 @@ const Post = require('../models/post');
 
 module.exports = {
 
-    async getAll(req, res) {
+    getAll(req, res) {
         Post.findAll()
             .then(posts => {
                 res.send(posts);
@@ -10,7 +10,7 @@ module.exports = {
             .catch(err => console.log(err));
     },
 
-    async get(req, res) {
+    get(req, res) {
         Post.findOne({
             where: {
                 id: req.params.id
@@ -26,13 +26,13 @@ module.exports = {
             .catch(err => console.log(err));
     },
 
-    async create(req, res) {
+    create(req, res) {
         Post.create(req.body).then(() => {
             res.sendStatus(201);
         }).catch(err => console.log(err));
     },
 
-    async update(req, res) {
+    update(req, res) {
         Post.update(req.body, {
             where: {
                 id: req.params.id
@@ -47,7 +47,7 @@ module.exports = {
             .catch(err => console.log(err));
     },
 
-    async delete(req, res) {
+    delete(req, res) {
         Post.findOne(req.body, {
             where: {
                 id: req.params.id
@@ -63,7 +63,7 @@ module.exports = {
             .catch(err => console.log(err));
     },
 
-    async deleteInBatch(req, res) {
+    deleteInBatch(req, res) {
         Post.destroy({
             where:
                 {

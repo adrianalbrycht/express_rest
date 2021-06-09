@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 
 module.exports = {
 
-    async getAll(req, res) {
+    getAll(req, res) {
         User.findAll()
             .then(users => {
                 res.send(users);
@@ -12,7 +12,7 @@ module.exports = {
             .catch(err => console.log(err));
     },
 
-    async get(req, res) {
+    get(req, res) {
         User.findOne({
             where: {
                 id: req.params.id
@@ -28,7 +28,7 @@ module.exports = {
             .catch(err => console.log(err));
     },
 
-    async create(req, res) {
+    create(req, res) {
         User.findOne({
             where: {
                 email: req.body.email
@@ -46,7 +46,7 @@ module.exports = {
             .catch(err => console.log(err));
     },
 
-    async login(req, res) {
+    login(req, res) {
         User.findOne({
             where: {
                 email: req.body.email
@@ -63,7 +63,7 @@ module.exports = {
             .catch(err => console.log(err));
     },
 
-    async update(req, res) {
+    update(req, res) {
         User.update(req.body, {
             where: {
                 id: req.params.id
@@ -78,7 +78,7 @@ module.exports = {
             .catch(err => console.log(err));
     },
 
-    async delete(req, res) {
+    delete(req, res) {
         User.findOne(req.body, {
             where: {
                 id: req.params.id
@@ -94,7 +94,7 @@ module.exports = {
             .catch(err => console.log(err));
     },
 
-    async deleteInBatch(req, res) {
+    deleteInBatch(req, res) {
         User.destroy({
             where:
                 {
