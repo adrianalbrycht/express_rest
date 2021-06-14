@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const v = require('../middleware/schema');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
@@ -28,22 +29,32 @@ module.exports = {
             .catch(err => console.log(err));
     },
 
-    create(req, res) {
-        User.findOne({
-            where: {
-                email: req.body.email
+    create(req, res, next) {
+        try {
+            const validation = v.userCreateValidation(req.body);
+            if (!validation.error) {
+                User.findOne({
+                    where: {
+                        email: req.body.email
+                    }
+                })
+                    .then(async user => {
+                        if (user) {
+                            res.sendStatus(409);
+                        } else {
+                            req.body.password = await bcrypt.hash(req.body.password, 10);
+                            User.create(req.body);
+                            res.sendStatus(201);
+                        }
+                    })
+                    .catch(err => console.log(err));
+            } else {
+                res.status(400).send(validation.error.details);
             }
-        })
-            .then(async user => {
-                if (user) {
-                    res.sendStatus(409);
-                } else {
-                    req.body.password = await bcrypt.hash(req.body.password, 10);
-                    User.create(req.body);
-                    res.sendStatus(201);
-                }
-            })
-            .catch(err => console.log(err));
+
+        } catch (err) {
+            next(err);
+        }
     },
 
     login(req, res) {
@@ -79,7 +90,7 @@ module.exports = {
     },
 
     delete(req, res) {
-        User.findOne(req.body, {
+        User.findOne({
             where: {
                 id: req.params.id
             }

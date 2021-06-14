@@ -1,4 +1,5 @@
 const Post = require('../models/post');
+const v = require('../middleware/schema');
 
 module.exports = {
 
@@ -26,36 +27,59 @@ module.exports = {
             .catch(err => console.log(err));
     },
 
-    create(req, res) {
-        Post.create(req.body).then(() => {
-            res.sendStatus(201);
-        }).catch(err => console.log(err));
+    create(req, res, next) {
+        try {
+            const validation = v.postCreateValidation(req.body);
+            if (!validation.error) {
+                Post.create(req.body).then(() => {
+                    res.sendStatus(201);
+                }).catch(err => console.log(err));
+            } else {
+                res.status(400).send(validation.error.details);
+            }
+        } catch (err) {
+            next(err);
+        }
     },
 
-    update(req, res) {
-        Post.update(req.body, {
-            where: {
-                id: req.params.id
-            }
-        }).then(post => {
-            if (post) {
-                res.sendStatus(202);
+    update(req, res, next) {
+        try {
+            const validation = v.postUpdateValidation(req.body);
+            if (!validation.error) {
+                Post.findOne({
+                    where: {
+                        id: req.params.id
+                    }
+                }).then(post => {
+                    if (post) {
+                        post.update(req.body, {
+                                where: {
+                                    id: req.params.id
+                                }
+                            }
+                        ).then(res.sendStatus(202));
+                    } else {
+                        res.sendStatus(404);
+                    }
+                })
+                    .catch(err => console.log(err));
             } else {
-                res.sendStatus(404);
+                res.status(400).send(validation.error.details);
             }
-        })
-            .catch(err => console.log(err));
+
+        } catch (err) {
+            next();
+        }
     },
 
     delete(req, res) {
-        Post.findOne(req.body, {
+        Post.findOne({
             where: {
                 id: req.params.id
             }
         }).then(post => {
             if (post) {
-                post.destroy();
-                res.sendStatus(204);
+                post.destroy().then(res.sendStatus(204));
             } else {
                 res.sendStatus(404);
             }

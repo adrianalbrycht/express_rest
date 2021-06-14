@@ -5,18 +5,13 @@ const User = db.define('user', {
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
-        primaryKey: true,
-        foreignKey: true
+        primaryKey: true
     },
     email: {
-        type: DataTypes.STRING,
-        validate: {
-            isEmail: true
-        }
+        type: DataTypes.STRING
     },
     password: {
-        type: DataTypes.STRING(64),
-        is: /^[0-9a-f]{64}$/i
+        type: DataTypes.STRING
     },
 });
 
